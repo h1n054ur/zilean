@@ -204,7 +204,10 @@ public class Decompressor
             {
                 if (c2 == dictionary.Count)
                 {
-                    entry = w.Span.ToArray().AsMemory();
+                    var rentedEntry = ArrayPool<char>.Shared.Rent(w.Length + 1);
+                    w.Span.CopyTo(rentedEntry);
+                    rentedEntry[w.Length] = w.Span[0];
+                    entry = rentedEntry.AsMemory(0, w.Length + 1);
                 }
                 else
                 {
